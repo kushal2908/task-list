@@ -1,9 +1,13 @@
 const express = require("express");
 const dotenv = require("dotenv").config();
 const { errorHandler } = require("./Middleware/errorMiddleware");
+const connectDB = require("./Config/db");
 
 // Initializing Express as app
 const app = express();
+
+// Connecting MongoDB
+connectDB();
 
 // Middlewares
 app.use(express.json());
