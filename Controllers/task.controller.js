@@ -1,4 +1,4 @@
-const asyncHandler = require("express-async-handler");
+const asyncHandler = require("express-async-handler"); //to handle exceptions
 const Task = require("../Models/task");
 ////////////////////////////////////////////////////////////////////////
 // When we use mongoose to interact with MongoDB we get back a promise,
@@ -6,16 +6,16 @@ const Task = require("../Models/task");
 ///////////////////////////////////////////////////////////////////////
 
 //@DESC        GET ALL THE TASKS
-//@ROUTE       api/tasks
-//@METHOD      GET
+//@ROUTE       GET api/tasks
+//@ACESS       Private
 const getTasks = asyncHandler(async (req, res) => {
   const data = await Task.find();
   res.status(200).json(data);
 });
 
-//@DESC        CREATE A TASKS
-//@ROUTE       api/tasks
-//@METHOD      POST
+//@DESC        CREATE A TASK
+//@ROUTE       POST api/tasks
+//@ACESS       Private
 const postTasks = asyncHandler(async (req, res) => {
   if (!req.body.text) {
     res.status(400);
@@ -29,8 +29,8 @@ const postTasks = asyncHandler(async (req, res) => {
 });
 
 //@DESC        UPDATE A TASK
-//@ROUTE       api/tasks/:id
-//@METHOD      PUT
+//@ROUTE       PUT api/tasks/:id
+//@ACESS       Private
 const updateTask = asyncHandler(async (req, res) => {
   const getTask = await Task.findById(req.params.id);
   if (!getTask) {
@@ -45,8 +45,8 @@ const updateTask = asyncHandler(async (req, res) => {
 });
 
 //@DESC        DELETE A TASK
-//@ROUTE       api/tasks/:id
-//@METHOD      DELETE
+//@ROUTE       DELETE api/tasks/:id
+//@ACESS       Private
 const deleteTask = asyncHandler(async (req, res) => {
   const getTask = await Task.findById(req.params.id);
   if (!getTask) {
