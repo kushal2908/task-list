@@ -1,5 +1,7 @@
 const asyncHandler = require("express-async-handler"); //to handle exceptions
+const task = require("../Models/task");
 const Task = require("../Models/task");
+const User = require("../Models/user");
 ////////////////////////////////////////////////////////////////////////
 // When we use mongoose to interact with MongoDB we get back a promise,
 // that is why we are using async
@@ -9,7 +11,7 @@ const Task = require("../Models/task");
 //@ROUTE       GET api/tasks
 //@ACESS       Private
 const getTasks = asyncHandler(async (req, res) => {
-  const data = await Task.find();
+  const data = await Task.find({ user: req.user.id });
   res.status(200).json(data);
 });
 
@@ -23,6 +25,7 @@ const postTasks = asyncHandler(async (req, res) => {
   }
   const task = await Task.create({
     text: req.body.text,
+    user: req.user.id, //to pass the created by [user id]
   });
 
   res.status(200).json(task);
@@ -36,6 +39,19 @@ const updateTask = asyncHandler(async (req, res) => {
   if (!getTask) {
     res.status(400);
     throw new Error("Task not found");
+  }
+
+  const user = await User.findById(req.user.id);
+  //check for user
+  if (!user) {
+    res.status(401);
+    throw new Error("User Not Found");
+  }
+
+  //Making sure the logged in user matches  the task user
+  if (task.user.toString() !== user.id) {
+    res.status(401);
+    throw new Error("User not authorized");
   }
   const updatedTask = await Task.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
@@ -52,6 +68,18 @@ const deleteTask = asyncHandler(async (req, res) => {
   if (!getTask) {
     res.status(400);
     throw Error("Task not found");
+  }
+  const user = await User.findById(req.user.id);
+  //check for user
+  if (!user) {
+    res.status(401);
+    throw new Error("User Not Found");
+  }
+
+  //Making sure the logged in user matches  the task user
+  if (getTask.user.toString() !== user.id) {
+    res.status(401);
+    throw new Error("User not authorized");
   }
   await getTask.remove();
   res.status(200).json({ id: req.params.id });

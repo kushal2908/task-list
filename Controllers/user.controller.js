@@ -79,7 +79,12 @@ const loginUser = asyncHandler(async (req, res) => {
 //@ACESS       Private
 ///////////////////////////////////////////////////////////////////////////
 const getUser = asyncHandler(async (req, res) => {
-  res.json({ msg: "Logged in user data display" });
+  const { _id, name, email } = await User.findById(req.user.id); // to get all the task created by the loggedin user
+  res.status(200).json({
+    id: _id,
+    name,
+    email,
+  });
 });
 
 ///////////////////////////////////////////////////////////////////////////
